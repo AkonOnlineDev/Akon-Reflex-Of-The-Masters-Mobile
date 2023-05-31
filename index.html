@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Akon: Reflex Of The Masters</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background-color: #603a17;
+      color: white;
+    }
+
+    .block {
+      width: 50px;
+      height: 50px;
+      background-color: brown;
+      margin: 5px;
+      display: inline-block;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      line-height: 50px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .visible {
+      opacity: 1;
+    }
+
+    #player1Score, #player2Score {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    #mainMenu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    #playButton, #howToPlayButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #2d1609;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    #blocks {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+      grid-gap: 10px;
+      justify-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <audio id="bgMusic" src="path/to/music.mp3" loop autoplay></audio>
+  
+  <div id="mainMenu">
+    <h1>Akon: Reflex Of The Masters</h1>
+    <button id="playButton">Play</button>
+    <button id="howToPlayButton">How To Play</button>
+  </div>
+  
+  <div id="gameContainer" style="display: none;">
+    <h2>Player 1's Turn</h2>
+    <div id="blocks">
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+    </div>
+  </div>
+
+  <h3 id="player1Score">Player 1: 0</h3>
+  <h3 id="player2Score">Player 2: 0</h3>
+
+  <script>
+    var player = 1;
+    var initialBlock = null;
+    var subBlock = null;
+    var player1Score = 0;
+    var player2Score = 0;
+
+    var blocks = document.querySelectorAll('.block');
+
+    document.getElementById('playButton').addEventListener('click', function() {
+      document.getElementById('mainMenu').style.display = 'none';
+      document.getElementById('gameContainer').style.display = 'block';
+    });
+
+    document.getElementById('howToPlayButton').addEventListener('click', function() {
+      alert('How To Play:\n\nClick on two blocks to reveal random numbers between 1 and 10. If the number in the first block is greater than the number in the second block, the current player earns 2 points. If the number in the first block is smaller, the opposing player earns 2 points. If the numbers are equal, both players earn 1 point. The game continues until a total of 20 points is reached. The player with more points wins the game. Good luck!');
+    });
+
+    blocks.forEach(function(block) {
+      block.addEventListener('click', function() {
+        if (!initialBlock) {
+          initialBlock = block;
+          block.style.backgroundColor = (player === 1) ? 'green' : 'red';
+          document.querySelector('h2').textContent = "Player " + ((player === 1) ? 1 : 2) + "'s Turn";
+        } else if (!subBlock) {
+          subBlock = block;
+          block.style.backgroundColor = (player === 1) ? 'green' : 'red';
+
+          var initialBlockValue = Math.floor(Math.random() * 10) + 1;
+          var subBlockValue = Math.floor(Math.random() * 10) + 1;
+
+          setTimeout(function() {
+            initialBlock.style.transform = 'scale(1.2)';
+            subBlock.style.transform = 'scale(1.2)';
+            initialBlock.style.opacity = 1;
+            subBlock.style.opacity = 1;
+            initialBlock.textContent = initialBlockValue;
+            subBlock.textContent = subBlockValue;
+
+            if (initialBlockValue > subBlockValue) {
+              if (player === 1) {
+                initialBlock.classList.add('player1');
+                subBlock.classList.add('player1');
+                player1Score += 2;
+                document.querySelector('#player1Score').textContent = "Player 1: " + player1Score;
+              } else {
+                initialBlock.classList.add('player2');
+                subBlock.classList.add('player2');
+                player2Score += 2;
+                document.querySelector('#player2Score').textContent = "Player 2: " + player2Score;
+              }
+            } else if (initialBlockValue < subBlockValue) {
+              if (player === 1) {
+                initialBlock.classList.add('player2');
+                subBlock.classList.add('player2');
+                player2Score += 2;
+                document.querySelector('#player2Score').textContent = "Player 2: " + player2Score;
+              } else {
+                initialBlock.classList.add('player1');
+                subBlock.classList.add('player1');
+                player1Score += 2;
+                document.querySelector('#player1Score').textContent = "Player 1: " + player1Score;
+              }
+            } else {
+              if (player === 1) {
+                initialBlock.classList.add('player1');
+                subBlock.classList.add('player1');
+                player1Score += 1;
+                document.querySelector('#player1Score').textContent = "Player 1: " + player1Score;
+              } else {
+                initialBlock.classList.add('player2');
+                subBlock.classList.add('player2');
+                player2Score += 1;
+                document.querySelector('#player2Score').textContent = "Player 2: " + player2Score;
+              }
+            }
+          }, 1000);
+
+          setTimeout(function() {
+            initialBlock.style.transform = 'scale(1)';
+            subBlock.style.transform = 'scale(1)';
+            initialBlock.style.backgroundColor = 'brown';
+            subBlock.style.backgroundColor = 'brown';
+            initialBlock.style.opacity = 0;
+            subBlock.style.opacity = 0;
+            initialBlock.textContent = '';
+            subBlock.textContent = '';
+            initialBlock = null;
+            subBlock = null;
+            player = (player === 1) ? 2 : 1;
+
+            if (player1Score + player2Score === 20) {
+              if (player1Score > player2Score) {
+                alert('Game Over! Player 1 Wins!');
+              } else if (player1Score < player2Score) {
+                alert('Game Over! Player 2 Wins!');
+              } else {
+                alert('Game Over! It\'s a tie!');
+              }
+              location.reload();
+            } else {
+              document.querySelector('h2').textContent = "Player " + ((player === 1) ? 1 : 2) + "'s Turn";
+            }
+          }, 2000);
+        }
+      });
+    });
+
+    setTimeout(function() {
+      blocks.forEach(function(block) {
+        block.classList.add('visible');
+        block.style.opacity = 0;
+        block.addEventListener('transitionend', function() {
+          block.style.opacity = 1;
+        });
+      });
+    }, 1000);
+  </script>
+</body>
+</html>
