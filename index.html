@@ -34,6 +34,14 @@
       opacity: 1;
     }
 
+    .player1 {
+      background-color: green;
+    }
+
+    .player2 {
+      background-color: red;
+    }
+
     #player1Score, #player2Score {
       font-size: 18px;
       margin: 10px 0;
@@ -46,7 +54,7 @@
       margin-bottom: 20px;
     }
 
-    #playButton, #howToPlayButton {
+    #playButton, #howToPlayButton, #playAgainstBotButton {
       padding: 10px 20px;
       font-size: 16px;
       background-color: #2d1609;
@@ -80,6 +88,7 @@
     <h1>Akon: Reflex Of The Masters</h1>
     <button id="playButton">Play</button>
     <button id="howToPlayButton">How To Play</button>
+    <button id="playAgainstBotButton">Play Against Bot</button>
   </div>
   
   <div id="gameContainer" style="display: none;">
@@ -117,6 +126,29 @@
     document.getElementById('howToPlayButton').addEventListener('click', function() {
       alert('How To Play:\n\nClick on two blocks to reveal random numbers between 1 and 10. If the number in the first block is greater than the number in the second block, the current player earns 2 points. If the number in the first block is smaller, the opposing player earns 2 points. If the numbers are equal, both players earn 1 point. The game continues until a total of 20 points is reached. The player with more points wins the game. Good luck!');
     });
+
+    // Add a new variable to track if the game is being played against a bot
+    var playAgainstBot = false;
+
+    // Add an event listener to the "Play Against Bot" button
+    document.getElementById('playAgainstBotButton').addEventListener('click', function() {
+      playAgainstBot = true;
+      document.getElementById('mainMenu').style.display = 'none';
+      document.getElementById('gameContainer').style.display = 'block';
+    });
+
+    // Add a function to simulate the bot's turn
+    function playBotTurn() {
+      // Generate random block selections for the bot
+      var randomIndex1 = Math.floor(Math.random() * blocks.length);
+      var randomIndex2 = Math.floor(Math.random() * blocks.length);
+      var botInitialBlock = blocks[randomIndex1];
+      var botSubBlock = blocks[randomIndex2];
+
+      // Simulate clicking the blocks programmatically
+      botInitialBlock.click();
+      botSubBlock.click();
+    }
 
     blocks.forEach(function(block) {
       block.addEventListener('click', function() {
@@ -190,6 +222,11 @@
             initialBlock = null;
             subBlock = null;
             player = (player === 1) ? 2 : 1;
+
+            if (playAgainstBot && player === 2) {
+              // If playing against a bot and it's the bot's turn, simulate the turn
+              playBotTurn();
+            }
 
             if (player1Score + player2Score === 20) {
               if (player1Score > player2Score) {
